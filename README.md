@@ -7,14 +7,18 @@ docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=YourStrong@Passw0rd" \
 ถ้าใช้ SQL Server ตัวอื่น แก้ `ConnectionStrings:Default` ใน `backend\appsettings.json`
 
 ## 2) Backend
-   cd backend
-   dotnet run
+```bash
+   cd backend  
+   dotnet run  
+```
 
 ## 3) Frontend
+```bash
    cd frontend
    npm install
    npm start
    เปิด http://localhost:4200
+```
 
 
 - สร้างงาน: ปุ่ม "+ สร้างงาน" หรือปุ่ม + บนหัวคอลัมน์
