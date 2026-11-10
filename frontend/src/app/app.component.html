@@ -1,0 +1,77 @@
+<header class="topbar">
+  <div class="brand">
+    <span class="logo">▦</span>
+    <div>
+      <h1>Project Board</h1>
+      <small>{{ tasks.length }} งานทั้งหมด</small>
+    </div>
+  </div>
+  <div class="right">
+    <span class="live" [class.off]="!connected"><i></i>{{ connected ? 'Live' : 'Offline' }}</span>
+    <button class="btn primary" (click)="openCreate()">+ สร้างงาน</button>
+  </div>
+</header>
+
+<main class="board">
+  @for (c of columns; track c.status) {
+    <section class="col"
+             [class.over]="overStatus === c.status"
+             [style.--accent]="c.color"
+             (dragover)="onOver($event, c.status)"
+             (drop)="drop(c.status)">
+      <div class="col-head">
+        <span class="dot"></span>
+        <h2>{{ c.name }}</h2>
+        <span class="count">{{ byStatus(c.status).length }}</span>
+        <button class="icon add" title="เพิ่มงานในคอลัมน์นี้" (click)="openCreate(c.status)">+</button>
+      </div>
+
+      <div class="cards">
+        @for (t of byStatus(c.status); track t.id) {
+          <article class="card" draggable="true"
+                   [class.dragging]="dragged?.id === t.id"
+                   (dragstart)="dragged = t"
+                   (dragend)="endDrag()">
+            <div class="card-title">{{ t.title }}</div>
+            @if (t.description) { <p class="card-desc">{{ t.description }}</p> }
+            <div class="card-foot">
+              <span class="key">TASK-{{ t.id }}</span>
+              <span class="tools">
+                <button class="icon" title="แก้ไข" (click)="openEdit(t)">✎</button>
+                <button class="icon danger" title="ลบ" (click)="remove(t)">🗑</button>
+              </span>
+            </div>
+          </article>
+        } @empty {
+          <div class="empty">ลากงานมาวางที่นี่</div>
+        }
+      </div>
+    </section>
+  }
+</main>
+
+@if (showModal) {
+  <div class="backdrop" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h3>{{ editing ? 'แก้ไข TASK-' + editing.id : 'สร้างงานใหม่' }}</h3>
+
+      <label>ชื่องาน</label>
+      <input [(ngModel)]="title" placeholder="เช่น ทำหน้า Login" (keyup.enter)="save()" autofocus />
+
+      <label>รายละเอียด</label>
+      <textarea [(ngModel)]="description" rows="3" placeholder="ไม่ใส่ก็ได้"></textarea>
+
+      <label>สถานะ</label>
+      <select [(ngModel)]="status">
+        @for (c of columns; track c.status) {
+          <option [ngValue]="c.status">{{ c.name }}</option>
+        }
+      </select>
+
+      <div class="modal-actions">
+        <button class="btn" (click)="closeModal()">ยกเลิก</button>
+        <button class="btn primary" (click)="save()">{{ editing ? 'บันทึก' : 'สร้างงาน' }}</button>
+      </div>
+    </div>
+  </div>
+}
